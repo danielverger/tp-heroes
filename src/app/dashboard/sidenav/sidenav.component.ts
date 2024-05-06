@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-sidenav',
@@ -6,5 +6,10 @@ import { Component } from '@angular/core';
   styleUrls: ['./sidenav.component.scss']
 })
 export class SidenavComponent {
+  @Input() showSideNav!: boolean;
+  
+  public menuList = [
+    {name: 'Heroes', route: 'heroes'},
+  ];
 
 }

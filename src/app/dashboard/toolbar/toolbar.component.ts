@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-toolbar',
@@ -6,5 +6,10 @@ import { Component } from '@angular/core';
   styleUrls: ['./toolbar.component.scss']
 })
 export class ToolbarComponent {
+  @Input() showSideNav!: boolean;
+  @Output() showSideNavChange = new EventEmitter<boolean>();
 
+  toggleMenu() {
+    this.showSideNavChange.emit(!this.showSideNav);
+  }
 }

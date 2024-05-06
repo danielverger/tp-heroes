@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DashboardComponent } from './dashboard.component';
+import { ToolbarComponent } from './toolbar/toolbar.component';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
@@ -8,7 +11,13 @@ describe('DashboardComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DashboardComponent]
+      declarations: [
+        DashboardComponent,
+      ],
+      imports: [
+        MatSidenavModule
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
     });
     fixture = TestBed.createComponent(DashboardComponent);
     component = fixture.componentInstance;
@@ -17,5 +26,6 @@ describe('DashboardComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+
   });
 });
