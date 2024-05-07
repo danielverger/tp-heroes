@@ -6,8 +6,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-
-
+import {MatTableModule} from '@angular/material/table';
+import {MatPaginatorModule} from '@angular/material/paginator';
 
 @NgModule({
   exports: [
@@ -17,7 +17,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatSidenavModule,
     MatListModule,
     MatMenuModule,
-    MatCardModule
+    MatCardModule,
+    MatTableModule,
+    MatPaginatorModule
   ],
   providers: [],
 })
