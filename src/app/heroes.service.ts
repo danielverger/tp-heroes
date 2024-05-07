@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Hero, HeroFilter, HeroResult } from './interfaces/hero';
 import { HttpClient } from '@angular/common/http';
-
+import {HttpParams} from "@angular/common/http";
 @Injectable({
   providedIn: 'root'
 })
@@ -11,7 +11,11 @@ export class HeroesService {
   constructor(private http: HttpClient) { }
 
   getHeroes(filter: HeroFilter): Observable<HeroResult>  {
-    return this.http.get<HeroResult>(`heroes?pageIndex=${filter.pageIndex}&pageSize=${filter.pageSize}&name=${filter.name}`);
+    let urlParams = new HttpParams()
+        .set('pageIndex', filter.pageIndex) 
+        .set('pageSize', filter.pageSize) 
+    filter.name && urlParams.set('name', filter.name);
+    return this.http.get<HeroResult>(`heroes`, {params: urlParams});
   }
 
   addHero(hero: Hero): Observable<HeroResult>  {

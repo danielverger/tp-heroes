@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../material.module';
+import { LoaderComponent } from './loader/loader.component';
 
 @NgModule({
     imports: [
@@ -8,7 +9,8 @@ import { MaterialModule } from '../material.module';
         MaterialModule
     ],
     declarations: [
-    ],
+        LoaderComponent
+  ],
     exports: [
         MaterialModule,
         CommonModule
