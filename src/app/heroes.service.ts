@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, catchError, of, throwError } from 'rxjs';
 import { Hero, HeroFilter, HeroResult } from './interfaces/hero';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import {HttpParams} from "@angular/common/http";
 @Injectable({
   providedIn: 'root'
@@ -14,8 +14,12 @@ export class HeroesService {
     let urlParams = new HttpParams()
         .set('pageIndex', filter.pageIndex) 
         .set('pageSize', filter.pageSize) 
-    filter.name && urlParams.set('name', filter.name);
-    return this.http.get<HeroResult>(`heroes`, {params: urlParams});
+        .set('active', filter.active) 
+        .set('direction', filter.direction) 
+    if (filter.name) {
+      urlParams = urlParams.set('name', filter.name);
+    }
+    return this.http.get<HeroResult>(`heroes`, {params: urlParams}).pipe( catchError(this.handleError) );
   }
 
   addHero(hero: Hero): Observable<HeroResult>  {
@@ -27,9 +31,11 @@ export class HeroesService {
   }
 
   deleteHero(id: number): Observable<HeroResult>  {
-    return this.http.delete<HeroResult>(`heroes/${id}`);
+    return this.http.delete<HeroResult>(`heroes/${id}`).pipe( catchError(this.handleError) );
   }
 
-
+  private handleError(error: HttpErrorResponse) {
+    return throwError(() => "Something bad happened; please try again later.");
+  }
 
 }

@@ -13,4 +13,6 @@ export interface HeroFilter {
   pageIndex: number;
   pageSize: number;
   name?: string;
+  active: string;
+  direction: string;
 }
