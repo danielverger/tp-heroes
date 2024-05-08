@@ -1,13 +1,15 @@
 import { NgModule } from '@angular/core';
 
 import { HeroesRoutingModule } from './heroes-routing.module';
-import { HeroesComponent } from './heroes.component';
 import { SharedModule } from '../shared/shared.module';
+import { HeroesListComponent } from './heroes-list/heroes-list.component';
+import { HeroModifyComponent } from './hero-modify/hero-modify.component';
 
 
 @NgModule({
   declarations: [
-    HeroesComponent
+    HeroesListComponent,
+    HeroModifyComponent
   ],
   imports: [
     SharedModule,

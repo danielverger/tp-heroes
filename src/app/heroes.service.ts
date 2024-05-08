@@ -7,35 +7,43 @@ import {HttpParams} from "@angular/common/http";
   providedIn: 'root'
 })
 export class HeroesService {
+  private _lastFilter = new HeroFilter();
+  public get lastFilter() {
+    return this._lastFilter;
+  }
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   getHeroes(filter: HeroFilter): Observable<HeroResult>  {
+    this._lastFilter = filter;
     let urlParams = new HttpParams()
-        .set('pageIndex', filter.pageIndex) 
-        .set('pageSize', filter.pageSize) 
-        .set('active', filter.active) 
-        .set('direction', filter.direction) 
-    if (filter.name) {
-      urlParams = urlParams.set('name', filter.name);
-    }
-    return this.http.get<HeroResult>(`heroes`, {params: urlParams}).pipe( catchError(this.handleError) );
+        .set( 'pageIndex', filter.pageIndex ) 
+        .set( 'pageSize', filter.pageSize ) 
+        .set( 'sortField', filter.sortField ) 
+        .set( 'sortDirection', filter.sortDirection ) 
+    filter.name && (urlParams = urlParams.set( 'name', filter.name ));
+
+    return this.http.get<HeroResult>( `heroes`, { params: urlParams } ).pipe( catchError(this.handleError) );
   }
 
-  addHero(hero: Hero): Observable<HeroResult>  {
-    return this.http.post<HeroResult>(`heroes`, hero);
+  getHero(id: number): Observable<Hero>{
+    return this.http.get<Hero>( `heroes/${id}` ).pipe( catchError(this.handleError) );
   }
 
-  modifyHero(hero: Hero): Observable<HeroResult>  {
-    return this.http.put<HeroResult>(`heroes/${hero.id}`, hero);
+  addHero(hero: Hero): Observable<Hero>  {
+    return this.http.post<Hero>( `heroes`, hero ).pipe( catchError(this.handleError) );
+  }
+
+  modifyHero(hero: Hero): Observable<Hero>  {
+    return this.http.put<Hero>( `heroes/${hero.id}`, hero ).pipe( catchError(this.handleError) );
   }
 
   deleteHero(id: number): Observable<HeroResult>  {
-    return this.http.delete<HeroResult>(`heroes/${id}`).pipe( catchError(this.handleError) );
+    return this.http.delete<HeroResult>( `heroes/${id}` ).pipe( catchError(this.handleError) );
   }
 
   private handleError(error: HttpErrorResponse) {
-    return throwError(() => "Something bad happened; please try again later.");
+    return throwError( () => "Something bad happened; please try again later." );
   }
 
 }

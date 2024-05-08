@@ -15,24 +15,28 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatDividerModule} from '@angular/material/divider';
+import {A11yModule} from '@angular/cdk/a11y';
 @NgModule({
   exports: [
-    MatToolbarModule,
-    MatIconModule,
+    A11yModule,
     MatButtonModule,
-    MatSidenavModule,
+    MatCardModule,
+    MatDialogModule,
+    MatDividerModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
     MatListModule,
     MatMenuModule,
-    MatCardModule,
-    MatTableModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
-    MatDialogModule,
-    MatSortModule,
-    MatTooltipModule,
+    MatSidenavModule,
     MatSnackBarModule,
-    MatInputModule,
-    MatFormFieldModule
+    MatSortModule,
+    MatTableModule,
+    MatToolbarModule,
+    MatTooltipModule,
   ],
   providers: [],
 })

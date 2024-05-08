@@ -14,7 +14,7 @@ export type snackBarType = 'warning' | 'error' | 'info'
   providedIn: 'root'
 })
 export class ModalService {
-  private dialogRef!: MatDialogRef<LoaderComponent>;
+  private dialogRef!: MatDialogRef<LoaderComponent>|null;
 
   private horizontalPosition: MatSnackBarHorizontalPosition = 'end';
   private verticalPosition: MatSnackBarVerticalPosition = 'top';
@@ -25,17 +25,20 @@ export class ModalService {
   ){ }
 
   showLoading() {
-    this.dialogRef = this.dialog.open(LoaderComponent, { disableClose: true, panelClass: "loader-dialog" });
+    if ( !this.dialogRef ) {
+      this.dialogRef = this.dialog.open( LoaderComponent, { disableClose: true, panelClass: "loader-dialog" } );
+    }
   }
 
   closeLoading() {
-    this.dialogRef.close();
+    this.dialogRef?.close();
+    this.dialogRef = null;
   }
 
   confirmDialog(title: string, message: string): MatDialogRef<ConfirmDialogComponent> {
-      return this.dialog.open(ConfirmDialogComponent, {
+      return this.dialog.open( ConfirmDialogComponent, {
         width: '350px',
-        data: <ConfirmDialogData>{title, message}
+        data: <ConfirmDialogData>{ title, message }
       });
   }
 
@@ -45,7 +48,7 @@ export class ModalService {
     config.panelClass = `${type}-snackbar`;
     config.horizontalPosition = this.horizontalPosition;
     config.verticalPosition = this.verticalPosition;
-    return this.snackBar.open(message, '', config);
+    return this.snackBar.open( message, '', config );
   }
   
 }
