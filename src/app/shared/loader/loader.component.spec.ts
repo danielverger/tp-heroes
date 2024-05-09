@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LoaderComponent } from './loader.component';
+import { SharedModule } from '../shared.module';
 
 describe('LoaderComponent', () => {
   let component: LoaderComponent;
@@ -8,7 +9,8 @@ describe('LoaderComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [LoaderComponent]
+      declarations: [LoaderComponent],
+      imports: [SharedModule]
     });
     fixture = TestBed.createComponent(LoaderComponent);
     component = fixture.componentInstance;

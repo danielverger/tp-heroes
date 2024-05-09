@@ -1,14 +1,20 @@
 import { TestBed } from '@angular/core/testing';
 
 import { HeroesService } from './heroes.service';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing'
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing'
 
 import * as heroes from './../assets/heroes.json'
 import { Hero, HeroFilter, HeroResult } from './interfaces/hero';
 
-fdescribe('HeroesService', () => {
+describe('HeroesService', () => {
   let service: HeroesService;
   let httpMock: HttpTestingController;
+  let heroFilter = new HeroFilter();
+  heroFilter.name = 'name';
+  heroFilter.pageIndex = 1;
+  heroFilter.pageSize = 10;
+  heroFilter.sortDirection = 'desc';
+  heroFilter.sortField = 'id';
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -30,16 +36,21 @@ fdescribe('HeroesService', () => {
 
   it('call getHeroes with filter and return heroes data', () => {
     const mockHeroesResponse = (heroes as any).default as Hero[];
-    const heroFilter = new HeroFilter();
-    heroFilter.name = 'name';
-    heroFilter.pageIndex = 1;
-    heroFilter.pageSize = 10;
-    heroFilter.sortDirection = 'desc';
-    heroFilter.sortField = 'id';
     const heroResult = <HeroResult>{heroes: mockHeroesResponse, total:11}
 
     service.getHeroes(heroFilter).subscribe( (res: HeroResult) => {
       expect(res).toEqual(heroResult)
+    })
+
+    httpMock.expectOne({url: 'heroes?pageIndex=1&pageSize=10&sortField=id&sortDirection=desc&name=name'}).flush(heroResult);
+  });
+
+  it('should modify the lastfilter when calling getHeroes with filter', () => {
+    const mockHeroesResponse = (heroes as any).default as Hero[];
+    const heroResult = <HeroResult>{heroes: mockHeroesResponse, total:11}
+
+    service.getHeroes(heroFilter).subscribe( (res: HeroResult) => {
+      expect(service.lastFilter).toEqual(heroFilter);
     })
 
     httpMock.expectOne({url: 'heroes?pageIndex=1&pageSize=10&sortField=id&sortDirection=desc&name=name'}).flush(heroResult);
@@ -53,6 +64,50 @@ fdescribe('HeroesService', () => {
     })
 
     httpMock.expectOne({url: 'heroes/1'}).flush(mockHeroResponse);
-  })
+  });
+
+  it('call addHero and return hero data', () => {
+    const newHero = <Hero>{name:'MOCK-MAN'};
+
+    service.addHero(newHero).subscribe( (res: Hero) => {
+      expect(res).toEqual({...newHero, id: 1});
+    })
+
+    const testRequest = httpMock.expectOne({url: 'heroes', method: 'POST'});
+    expect(testRequest.request.body).toEqual(newHero);
+    testRequest.flush({...newHero, id: 1});
+  });
+
+  it('call modifyHero and return hero data', () => {
+    const modifiedHero = <Hero>{id: 9, name:'MOCK-MAN'};
+
+    service.modifyHero(modifiedHero).subscribe( (res: Hero) => {
+      expect(res).toEqual(modifiedHero);
+    })
+
+    const testRequest = httpMock.expectOne({url: 'heroes/9', method: 'PUT'});
+    expect(testRequest.request.body).toEqual(modifiedHero);
+    testRequest.flush(modifiedHero);
+  });
+
+  it('call deleteHero and return hero data', () => {
+    const mockHeroesResponse = (heroes as any).default as Hero[];
+    const heroResult = <HeroResult>{heroes: mockHeroesResponse, total:11}
+
+    service.deleteHero(5).subscribe( (res: boolean) => {
+      expect(res).toEqual(true);
+    })
+
+    const testRequest = httpMock.expectOne({url: 'heroes/5', method: 'DELETE'});
+    testRequest.flush(true);
+  });
+
+  it('should throw an exception when the call fails', () => {
+    service.deleteHero(5).subscribe({
+      error: (err) => expect(err).toEqual('Something bad happened; please try again later.')
+    })
+
+    httpMock.expectOne({url: 'heroes/5', method: 'DELETE'}).error(new ProgressEvent('network error'))
+  });  
 
 });

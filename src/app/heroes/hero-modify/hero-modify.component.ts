@@ -53,7 +53,7 @@ export class HeroModifyComponent implements OnInit, AfterViewInit {
     this.heroesService.getHero(idHero).subscribe({
       next: ( hero: Hero ) =>
       {
-        if ( !hero ) {
+        if ( !hero?.id ) {
           this.modalService.openSnackBar(`Hero with id ${idHero} not exists`, 'error')
           .afterDismissed().subscribe(
             () => this.router.navigate(['dashboard/heroes'])

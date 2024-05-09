@@ -38,8 +38,8 @@ export class HeroesService {
     return this.http.put<Hero>( `heroes/${hero.id}`, hero ).pipe( catchError(this.handleError) );
   }
 
-  deleteHero(id: number): Observable<HeroResult>  {
-    return this.http.delete<HeroResult>( `heroes/${id}` ).pipe( catchError(this.handleError) );
+  deleteHero(id: number): Observable<boolean>  {
+    return this.http.delete<boolean>( `heroes/${id}` ).pipe( catchError(this.handleError) );
   }
 
   private handleError(error: HttpErrorResponse) {
