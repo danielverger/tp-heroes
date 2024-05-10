@@ -1,9 +1,9 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HeroesService } from './../../heroes.service';
 import { ModalService } from './../../shared/modal.service';
 import { Hero } from './../../interfaces/hero';
+import { HeroesService } from '../../services/heroes.service';
 
 @Component({
   selector: 'app-hero-modify',

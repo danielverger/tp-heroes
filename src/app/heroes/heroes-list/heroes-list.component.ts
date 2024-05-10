@@ -3,9 +3,9 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { debounceTime, distinctUntilChanged, fromEvent, map, merge, startWith, switchMap, tap } from 'rxjs';
 import { Hero } from '../../interfaces/hero';
-import { HeroesService } from '../../heroes.service';
 import { ModalService } from '../../shared/modal.service';
 // import { MatTableDataSource } from '@angular/material/table';
+import { HeroesService } from '../../services/heroes.service';
 
 @Component({
   selector: 'app-heroes-list',

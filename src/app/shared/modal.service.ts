@@ -14,7 +14,7 @@ export type snackBarType = 'warning' | 'error' | 'info'
   providedIn: 'root'
 })
 export class ModalService {
-  private dialogRef!: MatDialogRef<LoaderComponent>|null;
+  public dialogRef!: MatDialogRef<LoaderComponent>|null;
 
   private horizontalPosition: MatSnackBarHorizontalPosition = 'end';
   private verticalPosition: MatSnackBarVerticalPosition = 'top';

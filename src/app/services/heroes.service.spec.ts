@@ -3,8 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { HeroesService } from './heroes.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing'
 
-import * as heroes from './../assets/heroes.json'
-import { Hero, HeroFilter, HeroResult } from './interfaces/hero';
+import * as heroes from './../../assets/heroes.json'
+import { Hero, HeroFilter, HeroResult } from './../interfaces/hero';
 
 describe('HeroesService', () => {
   let service: HeroesService;
