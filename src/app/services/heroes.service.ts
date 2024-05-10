@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, catchError, of, throwError } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 import { Hero, HeroFilter, HeroResult } from './../interfaces/hero';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import {HttpParams} from "@angular/common/http";

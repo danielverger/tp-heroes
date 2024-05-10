@@ -4,7 +4,6 @@ import { MatSort } from '@angular/material/sort';
 import { debounceTime, distinctUntilChanged, fromEvent, map, merge, startWith, switchMap, tap } from 'rxjs';
 import { Hero } from '../../interfaces/hero';
 import { ModalService } from '../../shared/modal.service';
-// import { MatTableDataSource } from '@angular/material/table';
 import { HeroesService } from '../../services/heroes.service';
 
 @Component({
@@ -16,8 +15,6 @@ export class HeroesListComponent implements AfterViewInit {
   displayedColumns: string[] = ['id', 'name', 'actions'];
   public totalHeroes: number = 0;
   public heroesResult: Hero[] = [];
-  // public data: Hero[] = [];
-  // public dataSource = new MatTableDataSource<Hero>(this.data);
   
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -29,25 +26,17 @@ export class HeroesListComponent implements AfterViewInit {
     private cd: ChangeDetectorRef
   ){}
 
-  ngAfterViewInit(): void {
-    // this.dataSource.paginator = this.paginator;
-    const { pageIndex, pageSize, name, sortDirection, sortField } = this.heroesService.lastFilter;
-    this.paginator.pageIndex = pageIndex;
-    this.paginator.pageSize = pageSize;
-    this.inputName.nativeElement.value = name;
-    this.sort.active = sortField;
-    this.sort.direction = sortDirection;
-    this.cd.detectChanges();
 
-    const filterName$ = fromEvent<KeyboardEvent>( this.inputName.nativeElement, 'keyup' ).pipe( 
+  getObservableFilterName() {
+    return fromEvent<KeyboardEvent>( this.inputName.nativeElement, 'keyup' ).pipe( 
       map( ( ev: KeyboardEvent ) => (<HTMLInputElement>ev.target).value ),
       debounceTime(500), 
       distinctUntilChanged( ( prev, current ) => prev === current)
     );
+  }    
 
-    this.sort.sortChange.subscribe( () => this.paginator.pageIndex = 0 );
-
-    merge(filterName$, this.sort.sortChange, this.paginator.page)
+  getObersrvableFilters() {
+    return merge(this.getObservableFilterName(), this.sort.sortChange, this.paginator.page)
     .pipe(
       startWith({}),
       tap( () => this.modalService.showLoading()),
@@ -62,23 +51,30 @@ export class HeroesListComponent implements AfterViewInit {
           })
       } ),
       tap( () => this.modalService.closeLoading() )
-    ).subscribe({
+    )  
+  }
+
+  ngAfterViewInit(): void {
+    const { pageIndex, pageSize, name, sortDirection, sortField } = this.heroesService.lastFilter;
+    this.paginator.pageIndex = pageIndex;
+    this.paginator.pageSize = pageSize;
+    this.inputName.nativeElement.value = name;
+    this.sort.active = sortField;
+    this.sort.direction = sortDirection;
+    this.cd.detectChanges();
+
+    this.sort.sortChange.subscribe( () => this.paginator.pageIndex = 0 );
+
+    this.getObersrvableFilters().subscribe({
       next: ({ heroes, total }) => {
-        // this.dataSource.data = heroes;
         this.heroesResult = heroes;
         this.totalHeroes = total;
-        // this.paginator.length = total;
-        // this.dataSource = new MatTableDataSource<Hero>(this.dataSource.data);
-        // setTimeout(() => {
-        //   this.dataSource.paginator = this.paginator;
-        // });
       },
       error: ( err ) => {
         this.modalService.openSnackBar(err, 'error');
         this.modalService.closeLoading();
       },
     })
-
   }
 
   deleteHero(hero: Hero) {

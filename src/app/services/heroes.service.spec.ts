@@ -90,7 +90,7 @@ describe('HeroesService', () => {
     testRequest.flush(modifiedHero);
   });
 
-  it('call deleteHero and return hero data', () => {
+  it('call deleteHero and return true', () => {
     const mockHeroesResponse = (heroes as any).default as Hero[];
     const heroResult = <HeroResult>{heroes: mockHeroesResponse, total:11}
 
