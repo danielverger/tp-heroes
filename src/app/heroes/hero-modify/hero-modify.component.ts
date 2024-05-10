@@ -74,8 +74,8 @@ export class HeroModifyComponent implements OnInit, AfterViewInit {
 
   saveHero() {
     this.isSaving = true;
-    const { id, name } = this.heroForm.getRawValue();
-    const saveHero$ = this.isAddHero ? this.heroesService.addHero({ id, name }) : this.heroesService.modifyHero({ id, name });
+    const hero = <Hero>this.heroForm.getRawValue();
+    const saveHero$ = this.isAddHero ? this.heroesService.addHero(hero) : this.heroesService.modifyHero(hero);
     saveHero$.subscribe({
       next: ( hero: Hero ) => {
         this.modalService.openSnackBar(`Hero ${hero.name} ${this.isAddHero ? 'added': 'modified'}!!`, 'info')

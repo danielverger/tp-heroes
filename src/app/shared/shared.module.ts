@@ -4,6 +4,7 @@ import { MaterialModule } from '../material.module';
 import { LoaderComponent } from './loader/loader.component';
 import { ConfirmDialogComponent } from './confirm/confirm-dialog.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { UpperCaseDirective } from './upper-case.directive';
 
 @NgModule({
     imports: [
@@ -13,12 +14,14 @@ import { ReactiveFormsModule } from '@angular/forms';
     ],
     declarations: [
         LoaderComponent,
-        ConfirmDialogComponent
+        ConfirmDialogComponent,
+        UpperCaseDirective
   ],
     exports: [
         MaterialModule,
         CommonModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        UpperCaseDirective
     ],
 })
 export class SharedModule {
