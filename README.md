@@ -22,4 +22,4 @@ Ejecular `npm run test-coverage` para lanzar los tests
 
 ## Notas
 
-Para simular las llamadas al backend, se ha creado un [http interceptor](src/app/interceptor-http.service.ts) que simular el backend 
+Se ha creado un [http interceptor](src/app/interceptor-http.service.ts) para simular las llamadas al backend
