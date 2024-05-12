@@ -1,10 +1,11 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { debounceTime, distinctUntilChanged, fromEvent, map, merge, startWith, switchMap, tap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, merge, startWith, switchMap, tap } from 'rxjs';
 import { Hero } from '../../interfaces/hero';
 import { ModalService } from '../../shared/modal.service';
 import { HeroesService } from '../../services/heroes.service';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-heroes-list',
@@ -15,6 +16,7 @@ export class HeroesListComponent implements AfterViewInit {
   displayedColumns: string[] = ['id', 'name', 'actions'];
   public totalHeroes = 0;
   public heroesResult: Hero[] = [];
+  public filterNameControl = new FormControl();
   
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -28,19 +30,19 @@ export class HeroesListComponent implements AfterViewInit {
 
 
   getObservableFilterName() {
-    return fromEvent<KeyboardEvent>( this.inputName.nativeElement, 'keyup' ).pipe( 
-      map( ( ev: KeyboardEvent ) => (ev.target as HTMLInputElement).value ),
-      debounceTime(500), 
-      distinctUntilChanged( ( prev, current ) => prev === current),
-      tap( () => this.paginator.pageIndex = 0 )
-    );
+    return this.filterNameControl.valueChanges
+      .pipe( 
+        debounceTime(500), 
+        distinctUntilChanged(),
+        tap( () => this.paginator.pageIndex = 0 )
+      );
   }    
 
   getObersrvableFilters() {
     return merge(this.getObservableFilterName(), this.sort.sortChange, this.paginator.page)
     .pipe(
       startWith({}),
-      tap( () => this.modalService.showLoading()),
+      tap( () => this.modalService.showLoading() ),
       switchMap( () => {
         return this.heroesService.getHeroes(
           {
@@ -82,11 +84,11 @@ export class HeroesListComponent implements AfterViewInit {
     this.modalService.confirmDialog('Delete Hero', `Are you sure to delete ${hero.name}?`).afterClosed().subscribe(
         deleteOK => deleteOK && 
           this.heroesService.deleteHero(hero.id).subscribe({
-          next: ( deleted ) =>
-              deleted && this.modalService.openSnackBar(`${hero.name} deleted!`, 'info').afterOpened().subscribe( () => {
-                this.paginator.page.next(this.paginator)
-          }),
-          error: ( err ) => this.modalService.openSnackBar(err, 'error')
+            next: ( deleted ) =>
+                deleted && this.modalService.openSnackBar(`${hero.name} deleted!`, 'info').afterOpened().subscribe( () => {
+                  this.paginator.page.next(this.paginator)
+            }),
+            error: ( err ) => this.modalService.openSnackBar(err, 'error')
         })
       );
   }

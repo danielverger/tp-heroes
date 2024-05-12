@@ -131,9 +131,7 @@ describe('HeroesListComponent', () => {
   it('should emit input value changes', fakeAsync(() => {
     let inputValue = '';
     component.getObservableFilterName().subscribe((value)=>{inputValue = value});
-    const inputElement = component.inputName.nativeElement;
-    inputElement.value = 'Hero'
-    inputElement.dispatchEvent(new KeyboardEvent('keyup'));
+    component.filterNameControl.setValue('Hero');
 
     tick(501);
     fixture.detectChanges();
