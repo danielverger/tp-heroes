@@ -39,7 +39,7 @@ describe('ModalService', () => {
   it('should display a snackBar when calling openSnackBar', () => {
     const dialog = spyOn(snackBar, 'open');
     service.openSnackBar('message', 'info');
-    let config = new MatSnackBarConfig();
+    const config = new MatSnackBarConfig();
     config.politeness = 'assertive';
     config.announcementMessage = '';
     config.duration = 1200;

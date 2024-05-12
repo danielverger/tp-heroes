@@ -4,7 +4,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
 @Component({
-  template: ` <input id="name" uppercase/>`,
+  template: ` <input id="name" appUppercase/>`,
 })
 class TestComponent {}
 

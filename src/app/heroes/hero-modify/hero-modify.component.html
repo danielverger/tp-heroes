@@ -12,7 +12,7 @@
         </mat-form-field>
         <mat-form-field class="col-6">
           <mat-label>Name</mat-label>
-          <input id="inputName" uppercase type="text" 
+          <input id="inputName" appUppercase type="text" 
             matInput formControlName="name" #inputName>
           <mat-error *ngIf="heroForm.get('name')?.hasError('required')">
             Name is <strong>required</strong>

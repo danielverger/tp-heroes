@@ -10,11 +10,15 @@ Proyecto desplegado : [https://danielverger.github.io/tp-heroes/](https://daniel
 
 ## Servidor de desarrollo
 
-Ejecutar `npm install` y luego `ng serve`
+Ejecutar `npm install` y luego `npm start`
 
 ## Build
 
-Ejecutar `npm run build-prod` para realizar el build de la aplicación
+Ejecutar `npm run build:prod` para realizar el build de la aplicación
+
+## Linter
+
+Ejecutar `npm run lint`
 
 ## Test
 

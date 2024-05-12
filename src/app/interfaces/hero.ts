@@ -12,9 +12,9 @@ export interface HeroResult {
 
 
 export class HeroFilter {
-  pageIndex: number = 0;
-  pageSize: number = 10;
-  name: string = '';
-  sortField: string = 'name';
-  sortDirection: SortDirection = 'asc';
+  pageIndex = 0;
+  pageSize = 10;
+  name = '';
+  sortField = 'name';
+  sortDirection = 'asc' as SortDirection;
 }

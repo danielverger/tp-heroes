@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
 import { Hero, HeroFilter, HeroResult } from './../interfaces/hero';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import {HttpParams} from "@angular/common/http";
+import { HttpClient, HttpParams } from '@angular/common/http';
 @Injectable({
   providedIn: 'root'
 })
@@ -42,7 +41,7 @@ export class HeroesService {
     return this.http.delete<boolean>( `heroes/${id}` ).pipe( catchError(this.handleError) );
   }
 
-  private handleError(error: HttpErrorResponse) {
+  private handleError() {
     return throwError( () => "Something bad happened; please try again later." );
   }
 

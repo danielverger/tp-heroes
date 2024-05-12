@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalService } from './../../shared/modal.service';
@@ -10,7 +10,7 @@ import { HeroesService } from '../../services/heroes.service';
   templateUrl: './hero-modify.component.html',
   styleUrls: ['./hero-modify.component.scss']
 })
-export class HeroModifyComponent implements OnInit, AfterViewInit {
+export class HeroModifyComponent implements OnInit {
   public titleCard?: string;
   public heroForm!: FormGroup;
   public isAddHero = true;
@@ -18,15 +18,12 @@ export class HeroModifyComponent implements OnInit, AfterViewInit {
   @ViewChild('inputName') inputName!: ElementRef;
 
   constructor(
-    private route: ActivatedRoute, 
-    private heroesService: HeroesService,
-    private modalService: ModalService,
-    private router: Router,
-    private formBuilder: FormBuilder
+    readonly route: ActivatedRoute, 
+    readonly heroesService: HeroesService,
+    readonly modalService: ModalService,
+    readonly router: Router,
+    readonly formBuilder: FormBuilder
   ) {}
-
-  ngAfterViewInit(): void {
-  }
 
   ngOnInit(): void {
 
@@ -74,7 +71,7 @@ export class HeroModifyComponent implements OnInit, AfterViewInit {
 
   saveHero() {
     this.isSaving = true;
-    const hero = <Hero>this.heroForm.getRawValue();
+    const hero = this.heroForm.getRawValue() as Hero;
     const saveHero$ = this.isAddHero ? this.heroesService.addHero(hero) : this.heroesService.modifyHero(hero);
     saveHero$.subscribe({
       next: ( hero: Hero ) => {

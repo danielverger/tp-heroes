@@ -5,11 +5,15 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 
 import * as heroes from './../../assets/heroes.json'
 import { Hero, HeroFilter, HeroResult } from './../interfaces/hero';
+import { from } from 'rxjs';
 
 describe('HeroesService', () => {
+  const heroesList: Hero[] = [];
+  from(heroes).subscribe( (hero: Hero) => {heroesList.push(hero)} );
+  
   let service: HeroesService;
   let httpMock: HttpTestingController;
-  let heroFilter = new HeroFilter();
+  const heroFilter = new HeroFilter();
   heroFilter.name = 'name';
   heroFilter.pageIndex = 1;
   heroFilter.pageSize = 10;
@@ -35,8 +39,7 @@ describe('HeroesService', () => {
   })
 
   it('call getHeroes with filter and return heroes data', () => {
-    const mockHeroesResponse = (heroes as any).default as Hero[];
-    const heroResult = <HeroResult>{heroes: mockHeroesResponse, total:11}
+    const heroResult = {heroes: heroesList, total:11} as HeroResult;
 
     service.getHeroes(heroFilter).subscribe( (res: HeroResult) => {
       expect(res).toEqual(heroResult)
@@ -46,10 +49,9 @@ describe('HeroesService', () => {
   });
 
   it('should modify the lastfilter when calling getHeroes with filter', () => {
-    const mockHeroesResponse = (heroes as any).default as Hero[];
-    const heroResult = <HeroResult>{heroes: mockHeroesResponse, total:11}
+    const heroResult = {heroes: heroesList, total:11} as HeroResult;
 
-    service.getHeroes(heroFilter).subscribe( (res: HeroResult) => {
+    service.getHeroes(heroFilter).subscribe( () => {
       expect(service.lastFilter).toEqual(heroFilter);
     })
 
@@ -57,7 +59,7 @@ describe('HeroesService', () => {
   });
 
   it('call getHero with id and return hero data', () => {
-    const mockHeroResponse = <Hero>{ id: 1, name: 'MOCK-MAN' };
+    const mockHeroResponse = { id: 1, name: 'MOCK-MAN' } as Hero;
 
     service.getHero(1).subscribe( (res: Hero) => {
       expect(res).toEqual(mockHeroResponse);
@@ -67,7 +69,7 @@ describe('HeroesService', () => {
   });
 
   it('call addHero and return hero data', () => {
-    const newHero = <Hero>{name:'MOCK-MAN'};
+    const newHero = {name:'MOCK-MAN'} as Hero;
 
     service.addHero(newHero).subscribe( (res: Hero) => {
       expect(res).toEqual({...newHero, id: 1});
@@ -79,7 +81,7 @@ describe('HeroesService', () => {
   });
 
   it('call modifyHero and return hero data', () => {
-    const modifiedHero = <Hero>{id: 9, name:'MOCK-MAN'};
+    const modifiedHero = {id: 9, name:'MOCK-MAN'} as Hero;
 
     service.modifyHero(modifiedHero).subscribe( (res: Hero) => {
       expect(res).toEqual(modifiedHero);
@@ -91,8 +93,6 @@ describe('HeroesService', () => {
   });
 
   it('call deleteHero and return true', () => {
-    const mockHeroesResponse = (heroes as any).default as Hero[];
-    const heroResult = <HeroResult>{heroes: mockHeroesResponse, total:11}
 
     service.deleteHero(5).subscribe( (res: boolean) => {
       expect(res).toEqual(true);

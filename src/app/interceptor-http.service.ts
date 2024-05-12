@@ -16,7 +16,7 @@ import * as heroes from './../assets/heroes.json'
 @Injectable()
 export class FakeBackendHttpInterceptor implements HttpInterceptor {
 
-  private heroesList = ( heroes as any ).default;
+  private heroesList: Hero[] = [];
   private totalFilteredHeroes = 0;
 
   intercept(
@@ -26,33 +26,39 @@ export class FakeBackendHttpInterceptor implements HttpInterceptor {
     return this.handleRequests(req, next);
   }
 
+  constructor() {
+    from(heroes).subscribe( (hero: Hero) => {this.heroesList.push(hero)} );
+  }
+
   handleRequests(req: HttpRequest<any>, next: HttpHandler) {
     const { url, method, urlWithParams } = req;
+    
 
     if ( url === 'heroes' && method === 'GET' ) {
       const searchParams  = new URLSearchParams( urlWithParams.split( '?' )[1] );
-      const pageSize      = parseInt( searchParams.get( 'pageSize') || '10' );
-      const pageIndex     = parseInt( searchParams.get( 'pageIndex') || '0' );
-      const name          = searchParams.get( 'name' ) || '';
-      const sortField     = <keyof Hero>searchParams.get( 'sortField' ) || 'name';
-      const sortDirection = searchParams.get( 'sortDirection' ) || '';
-      let heroesResult: Hero[] = [];
+      const pageSize      = parseInt( searchParams.get( 'pageSize') ?? '10' );
+      const pageIndex     = parseInt( searchParams.get( 'pageIndex') ?? '0' );
+      const name          = searchParams.get( 'name' ) ?? '';
+      const sortField     = searchParams.get( 'sortField' ) as keyof Hero || 'name';
+      const sortDirection = searchParams.get( 'sortDirection' ) ?? '';
+      const heroesResult: Hero[] = [];
 
-      const filteredDataObservable$ = of( <Hero[]>this.heroesList )
+      const filteredDataObservable$ = of( this.heroesList )
         .pipe(
           map( ( data: Hero[] ) => {
             return data.filter( hero =>
               hero.name.toUpperCase().includes( name.toLocaleUpperCase() )
             )
             .sort( ( a: Hero, b: Hero ) => {
-              return (sortDirection === 'desc' ? a[sortField] < b[sortField] : a[sortField] > b[sortField]) ? 1 : -1
+              // return (sortDirection === 'desc' ? a[sortField] < b[sortField] : a[sortField] > b[sortField]) ? 1 : -1
+              return  (a[sortField] < b[sortField] ? 1 : -1) * (sortDirection === 'desc' ? 1 : -1)
             })
           }),
         )
 
       filteredDataObservable$.subscribe( ( filteredData: Hero[] ) => {
         this.totalFilteredHeroes = filteredData.length;
-        from( <Hero[]>filteredData ).pipe(
+        from( filteredData ).pipe(
           skip( pageIndex * pageSize ),
           take( pageSize ))
           .subscribe( ( hero: Hero ) => {
@@ -60,13 +66,13 @@ export class FakeBackendHttpInterceptor implements HttpInterceptor {
           });
       });
 
-      const body = <HeroResult>{ heroes: heroesResult, total: this.totalFilteredHeroes };
+      const body = { heroes: heroesResult, total: this.totalFilteredHeroes } as HeroResult;
       return of( new HttpResponse({ status: 200, body }) ).pipe(delay(1000));
     }
 
     if ( url.startsWith( 'heroes/' ) && method === 'GET' ) {
       const idHero = parseInt( urlWithParams.split('/')[1] );
-      const hero: Hero = this.heroesList.find( (hero: Hero) => hero.id === idHero );
+      const hero = this.heroesList.find( (hero: Hero) => hero.id === idHero );
       const body = hero;
       return of( new HttpResponse({ status: 200, body }) ).pipe(delay(1000));
     }
@@ -79,8 +85,7 @@ export class FakeBackendHttpInterceptor implements HttpInterceptor {
 
     if ( url.startsWith( 'heroes' ) && method === 'POST' ) {
       const { body } = req;
-      const idHero = parseInt( urlWithParams.split( '/' )[1] );
-      (<Hero>body).id = Math.max( ...this.heroesList.map( ( hero:Hero ) => hero.id ), 0 ) + 1;
+      (body as Hero).id = Math.max( ...this.heroesList.map( ( hero:Hero ) => hero.id ), 0 ) + 1;
       this.heroesList.push(body);
       return of( new HttpResponse({ status: 200, body }) ).pipe(delay(200));
     }
@@ -98,7 +103,7 @@ export class FakeBackendHttpInterceptor implements HttpInterceptor {
   }
 }
 
-export let fakeBackendProvider = {
+export const fakeBackendProvider = {
   provide: HTTP_INTERCEPTORS,
   useClass: FakeBackendHttpInterceptor,
   multi: true,

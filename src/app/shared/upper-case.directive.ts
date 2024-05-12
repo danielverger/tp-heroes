@@ -2,7 +2,7 @@ import { Directive, ElementRef, EventEmitter, HostListener, Output, forwardRef, 
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Directive({
-  selector: '[uppercase]',
+  selector: '[appUppercase]',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -14,11 +14,11 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 export class UpperCaseDirective implements ControlValueAccessor{
   public ref = inject(ElementRef);
-  private onChange!: (value: any) => void;
+  private onChange!: (value: string) => void;
   private onTouched!: () => void;
   public value!: string;
 
-  @Output() ngModelChange: EventEmitter<any> = new EventEmitter()
+  @Output() ngModelChange: EventEmitter<string> = new EventEmitter()
   
   @HostListener('input', ['$event.target.value'])
   onInput(value: string) {
@@ -28,16 +28,15 @@ export class UpperCaseDirective implements ControlValueAccessor{
     this.onTouched && this.onTouched();
   }
 
-  writeValue(value: any): void {
+  writeValue(value: string): void {
     this.ref.nativeElement.value = value.toUpperCase();
   }
 
-  registerOnChange(fn: any): void {
+  registerOnChange(fn: (value: string) => void): void {
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: any): void {
+  registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
-
 }

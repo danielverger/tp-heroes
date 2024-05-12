@@ -13,7 +13,7 @@ import { HeroesService } from '../../services/heroes.service';
 })
 export class HeroesListComponent implements AfterViewInit {
   displayedColumns: string[] = ['id', 'name', 'actions'];
-  public totalHeroes: number = 0;
+  public totalHeroes = 0;
   public heroesResult: Hero[] = [];
   
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -21,17 +21,18 @@ export class HeroesListComponent implements AfterViewInit {
   @ViewChild('inputName') inputName!: ElementRef;
   
   constructor(
-    private heroesService: HeroesService, 
-    private modalService: ModalService,
-    private cd: ChangeDetectorRef
+    readonly heroesService: HeroesService, 
+    readonly modalService: ModalService,
+    readonly cd: ChangeDetectorRef
   ){}
 
 
   getObservableFilterName() {
     return fromEvent<KeyboardEvent>( this.inputName.nativeElement, 'keyup' ).pipe( 
-      map( ( ev: KeyboardEvent ) => (<HTMLInputElement>ev.target).value ),
+      map( ( ev: KeyboardEvent ) => (ev.target as HTMLInputElement).value ),
       debounceTime(500), 
-      distinctUntilChanged( ( prev, current ) => prev === current)
+      distinctUntilChanged( ( prev, current ) => prev === current),
+      tap( () => this.paginator.pageIndex = 0 )
     );
   }    
 

@@ -4,35 +4,36 @@ import { HeroesListComponent } from './heroes-list.component';
 import { SharedModule } from './../../shared/shared.module';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarDismiss } from '@angular/material/snack-bar';
-import { of, throwError } from 'rxjs';
+import { from, of, throwError } from 'rxjs';
 import { ModalService } from './../../shared/modal.service';
 import { HeroesService } from '../../services/heroes.service';
 import * as heroes from './../../../assets/heroes.json'
-import { HeroFilter } from './../../interfaces/hero';
+import { Hero, HeroFilter, HeroResult } from './../../interfaces/hero';
 
 class MockModalService {
   confirmDialog = jasmine.createSpy('confirmDialog')
     .and.returnValue({afterClosed: () => of(true)})
   openSnackBar = jasmine.createSpy('openSnackBar')
     .and.returnValue({
-      afterDismissed: () => of(<MatSnackBarDismiss>{dismissedByAction: true}),
+      afterDismissed: () => of({dismissedByAction: true} as MatSnackBarDismiss),
       afterOpened: () => of(true),
     })
 
-  showLoading() {};
-  closeLoading() {};
+  showLoading = () => true;
+  closeLoading = () => true;
 }
 
 describe('HeroesListComponent', () => {
-  const heroesList = ( heroes as any ).default;
+  const heroesList: Hero[] = [];
+  from(heroes).subscribe( (hero: Hero) => {heroesList.push(hero)} );
+  const heroesResult = {heroes: heroesList, total: heroesList.length} as HeroResult;
+
   let component: HeroesListComponent;
   let fixture: ComponentFixture<HeroesListComponent>;
   let heroesService: HeroesService;
   let modalService: ModalService;
-  class MockComponent {}
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -40,18 +41,10 @@ describe('HeroesListComponent', () => {
       imports: [
         BrowserAnimationsModule,
         HttpClientTestingModule,
-        RouterTestingModule.withRoutes([
-          {path: 'heroes/5', component: MockComponent},
-        ]),
+        RouterTestingModule,
         SharedModule
       ],
       providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {params: {id: '24fkzrw3487943uf358lovd'}}
-          }
-        },
         {provide: ModalService, useClass: MockModalService }
       ]
     });
@@ -86,10 +79,12 @@ describe('HeroesListComponent', () => {
 
 
   it('should call the hero search when filtering by name', fakeAsync(() => {
-    const getHeroes = spyOn(heroesService, 'getHeroes').and.returnValue(of(heroesList));
+    const getHeroes = spyOn(heroesService, 'getHeroes').and.returnValue(of(heroesResult));
 
     component.inputName.nativeElement.value = 'MOCKMAN';
-    component.getObersrvableFilters().subscribe(()=>{});
+    component.getObersrvableFilters().subscribe( (heroes) => {
+      expect(heroes).not.toBeNull();
+    });
 
     expect(getHeroes).toHaveBeenCalledWith({
       pageIndex: 0,
@@ -100,10 +95,12 @@ describe('HeroesListComponent', () => {
   }));
 
   it('should call the hero search when change sort', fakeAsync(() => {
-    const getHeroes = spyOn(heroesService, 'getHeroes').and.returnValue(of(heroesList));
+    const getHeroes = spyOn(heroesService, 'getHeroes').and.returnValue(of(heroesResult));
 
     component.sort.active = 'id';
-    component.getObersrvableFilters().subscribe(()=>{});
+    component.getObersrvableFilters().subscribe( (heroes) => {
+      expect(heroes).not.toBeNull();
+    });
 
     expect(getHeroes).toHaveBeenCalledWith({
       pageIndex: 0,
@@ -115,10 +112,12 @@ describe('HeroesListComponent', () => {
   }));
 
   it('should call the hero search when change page size', fakeAsync(() => {
-    const getHeroes = spyOn(heroesService, 'getHeroes').and.returnValue(of(heroesList));
+    const getHeroes = spyOn(heroesService, 'getHeroes').and.returnValue(of(heroesResult));
 
     component.paginator.pageSize = 5;
-    component.getObersrvableFilters().subscribe(()=>{});
+    component.getObersrvableFilters().subscribe( (heroes) => {
+      expect(heroes).not.toBeNull();
+    });
 
     expect(getHeroes).toHaveBeenCalledWith({
       pageIndex: 0,

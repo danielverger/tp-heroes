@@ -16,13 +16,14 @@ import { HeroesService } from '../../services/heroes.service';
 
 class MockModalService {
   openSnackBar = jasmine.createSpy('openSnackBar')
-    .and.returnValue({afterDismissed: () => of(<MatSnackBarDismiss>{dismissedByAction: true})})
+    .and.returnValue({afterDismissed: () => of({dismissedByAction: true} as MatSnackBarDismiss)})
 
-  showLoading() {};
-  closeLoading() {};
+  showLoading = () => true;
+  closeLoading = () => true;
 }
 
 describe('HeroModifyComponent', () => {
+  const ROUTE_HEROES_LIST = 'dashboard/heroes';
   let params: Subject<Params>;
   let data: Subject<Data>;
   let component: HeroModifyComponent;
@@ -77,11 +78,12 @@ describe('HeroModifyComponent', () => {
 
   it('should show message error if we receive a invalid id', () => {
     const navigate = spyOn(router, 'navigate')
-    spyOn(heroesService, 'getHero').and.returnValue(of(<Hero>{}));
+    spyOn(heroesService, 'getHero').and.returnValue(of({} as Hero));
     params.next(convertToParamMap({ 'id': '123' }));
     fixture.detectChanges();
 
     expect(modalService.openSnackBar).toHaveBeenCalledWith('Hero with id 123 not exists', 'error');
+    expect(navigate).toHaveBeenCalledWith([ROUTE_HEROES_LIST]);
   });
 
 
@@ -107,14 +109,14 @@ describe('HeroModifyComponent', () => {
     component.saveHero();
 
     expect(modalService.openSnackBar).toHaveBeenCalledWith('Hero NEW HERO MAN added!!', 'info');
-    expect(navigate).toHaveBeenCalledWith(['dashboard/heroes']);
+    expect(navigate).toHaveBeenCalledWith([ROUTE_HEROES_LIST]);
   });
 
 
   it('should display an informative message and navigate to the list when modify a hero', () => {
     const navigate = spyOn(router, 'navigate');
     spyOn(heroesService, 'modifyHero').and.returnValue(of({id: 9, name: 'SUPER-MOCK-MAN-MODIFIED'}));
-    spyOn(heroesService, 'getHero').and.returnValue(of({id: 9, name: 'SUPER-MOCK-MAN'}))
+    spyOn(heroesService, 'getHero').and.returnValue(of({id: 9, name: 'SUPER-MOCK-MAN-ORIGINAL'}))
     params.next(convertToParamMap({ 'id': '9' }));
     data.next({ 'title': 'Modify' });
     fixture.detectChanges();
@@ -123,13 +125,13 @@ describe('HeroModifyComponent', () => {
     component.saveHero();
 
     expect(modalService.openSnackBar).toHaveBeenCalledWith('Hero SUPER-MOCK-MAN-MODIFIED modified!!', 'info');
-    expect(navigate).toHaveBeenCalledWith(['dashboard/heroes']);
+    expect(navigate).toHaveBeenCalledWith([ROUTE_HEROES_LIST]);
   });
 
 
   it('should display an error message when modify a hero and return exception', () => {
     spyOn(heroesService, 'modifyHero').and.returnValue(throwError(() => '404'));
-    spyOn(heroesService, 'getHero').and.returnValue(of({id: 9, name: 'SUPER-MOCK-MAN'}))
+    spyOn(heroesService, 'getHero').and.returnValue(of({id: 9, name: 'EXCEPTION-MOCK-MAN'}))
     params.next(convertToParamMap({ 'id': '9' }));
     data.next({ 'title': 'Modify' });
     fixture.detectChanges();
