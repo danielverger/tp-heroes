@@ -1,7 +1,7 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { debounceTime, distinctUntilChanged, merge, startWith, switchMap, tap } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, merge, startWith, switchMap, takeUntil, tap } from 'rxjs';
 import { Hero } from '../../interfaces/hero';
 import { ModalService } from '../../shared/modal.service';
 import { HeroesService } from '../../services/heroes.service';
@@ -12,11 +12,12 @@ import { FormControl } from '@angular/forms';
   templateUrl: './heroes-list.component.html',
   styleUrls: ['./heroes-list.component.scss']
 })
-export class HeroesListComponent implements AfterViewInit {
+export class HeroesListComponent implements AfterViewInit, OnDestroy {
   displayedColumns: string[] = ['id', 'name', 'actions'];
   public totalHeroes = 0;
   public heroesResult: Hero[] = [];
   public filterNameControl = new FormControl();
+  private componetDestroyed$ = new Subject<void>();
   
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -53,7 +54,8 @@ export class HeroesListComponent implements AfterViewInit {
             name: this.inputName.nativeElement.value,
           })
       } ),
-      tap( () => this.modalService.closeLoading() )
+      tap( () => this.modalService.closeLoading() ),
+      takeUntil(this.componetDestroyed$)
     )  
   }
 
@@ -91,6 +93,11 @@ export class HeroesListComponent implements AfterViewInit {
             error: ( err ) => this.modalService.openSnackBar(err, 'error')
         })
       );
+  }
+
+  ngOnDestroy() {
+    this.componetDestroyed$.next();
+    this.componetDestroyed$.complete();
   }
 
 }
