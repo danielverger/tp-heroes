@@ -1,17 +1,20 @@
-import { Injectable } from '@angular/core';
-import { Observable, catchError, throwError } from 'rxjs';
-import { Hero, HeroFilter, HeroResult } from './../interfaces/hero';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+
+import { Observable, catchError, throwError } from 'rxjs';
+
+import { Hero, HeroFilter, HeroResult } from './../interfaces/hero';
+
 @Injectable({
   providedIn: 'root'
 })
 export class HeroesService {
   private _lastFilter = new HeroFilter();
+  private http = inject(HttpClient);
+
   public get lastFilter() {
     return this._lastFilter;
   }
-
-  constructor(private http: HttpClient) {}
 
   getHeroes(filter: HeroFilter): Observable<HeroResult>  {
     this._lastFilter = filter;

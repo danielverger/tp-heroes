@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { UpperCaseDirective } from './upper-case.directive';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+
+import { UpperCaseDirective } from './upper-case.directive';
 
 @Component({
   template: ` <input id="name" appUppercase/>`,
@@ -13,7 +14,8 @@ describe('UpperCaseDirective', () => {
   
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [UpperCaseDirective, TestComponent],
+      declarations: [TestComponent],
+      imports: [UpperCaseDirective],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestComponent);

@@ -1,16 +1,59 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { Subject, debounceTime, distinctUntilChanged, merge, startWith, switchMap, takeUntil, tap } from 'rxjs';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild, inject } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+
+import { 
+  Subject, 
+  debounceTime, 
+  distinctUntilChanged, 
+  merge, 
+  startWith, 
+  switchMap, 
+  takeUntil, 
+  tap 
+} from 'rxjs';
+
 import { Hero } from '../../interfaces/hero';
 import { ModalService } from '../../shared/modal.service';
 import { HeroesService } from '../../services/heroes.service';
-import { FormControl } from '@angular/forms';
+
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatListModule } from '@angular/material/list';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-heroes-list',
   templateUrl: './heroes-list.component.html',
-  styleUrls: ['./heroes-list.component.scss']
+  styleUrls: ['./heroes-list.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatCardModule,
+    MatDialogModule,
+    MatDividerModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatPaginatorModule,
+    MatSnackBarModule,
+    MatSortModule,
+    MatTableModule,
+    ReactiveFormsModule,
+    RouterModule,
+  ],
+  providers: [ModalService]
 })
 export class HeroesListComponent implements AfterViewInit, OnDestroy {
   displayedColumns: string[] = ['id', 'name', 'actions'];
@@ -19,17 +62,14 @@ export class HeroesListComponent implements AfterViewInit, OnDestroy {
   public filterNameControl = new FormControl();
   private componetDestroyed$ = new Subject<void>();
   
+  public modalService = inject(ModalService);
+  private heroesService = inject(HeroesService);
+  private cd = inject(ChangeDetectorRef);
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('inputName') inputName!: ElementRef;
   
-  constructor(
-    readonly heroesService: HeroesService, 
-    readonly modalService: ModalService,
-    readonly cd: ChangeDetectorRef
-  ){}
-
-
   getObservableFilterName() {
     return this.filterNameControl.valueChanges
       .pipe( 

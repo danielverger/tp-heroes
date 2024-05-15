@@ -1,57 +1,62 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+
+import { of, throwError } from 'rxjs';
 
 import { HeroesListComponent } from './heroes-list.component';
-import { SharedModule } from './../../shared/shared.module';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatSnackBarDismiss } from '@angular/material/snack-bar';
-import { from, of, throwError } from 'rxjs';
 import { ModalService } from './../../shared/modal.service';
 import { HeroesService } from '../../services/heroes.service';
 import * as heroes from './../../../assets/heroes.json'
 import { Hero, HeroFilter, HeroResult } from './../../interfaces/hero';
 
+import { MatSnackBarDismiss } from '@angular/material/snack-bar';
+
 class MockModalService {
   confirmDialog = jasmine.createSpy('confirmDialog')
-    .and.returnValue({afterClosed: () => of(true)})
+    .and.returnValue({afterClosed: () => of(true)} )
   openSnackBar = jasmine.createSpy('openSnackBar')
     .and.returnValue({
       afterDismissed: () => of({dismissedByAction: true} as MatSnackBarDismiss),
       afterOpened: () => of(true),
     })
 
-  showLoading = () => true;
-  closeLoading = () => true;
+  showLoading = () => true
+  closeLoading = () => true
 }
 
 describe('HeroesListComponent', () => {
-  const heroesList: Hero[] = [];
-  from(heroes).subscribe( (hero: Hero) => {heroesList.push(hero)} );
+  const heroesList = Array.from(heroes) as Hero[];
   const heroesResult = {heroes: heroesList, total: heroesList.length} as HeroResult;
 
   let component: HeroesListComponent;
   let fixture: ComponentFixture<HeroesListComponent>;
   let heroesService: HeroesService;
-  let modalService: ModalService;
 
   beforeEach(() => {
+
     TestBed.configureTestingModule({
-      declarations: [HeroesListComponent],
       imports: [
-        BrowserAnimationsModule,
-        HttpClientTestingModule,
-        RouterTestingModule,
-        SharedModule
+        HeroesListComponent
       ],
       providers: [
-        {provide: ModalService, useClass: MockModalService }
-      ]
-    });
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
+        provideAnimations(),
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
+    })
+    .overrideComponent(HeroesListComponent, {
+      set: {providers: [{provide: ModalService, useClass: MockModalService }]}})
+    .compileComponents();
+
     fixture = TestBed.createComponent(HeroesListComponent);
     component = fixture.componentInstance;
     heroesService = TestBed.inject(HeroesService);
-    modalService = TestBed.inject(ModalService);
     fixture.detectChanges();
   });
 
@@ -64,8 +69,8 @@ describe('HeroesListComponent', () => {
     spyOn(heroesService, 'deleteHero').and.returnValue(of(true));
 
     component.deleteHero({id: 5, name: 'MOCKMAN'});
-    expect(modalService.confirmDialog).toHaveBeenCalledWith('Delete Hero', 'Are you sure to delete MOCKMAN?');
-    expect(modalService.openSnackBar).toHaveBeenCalledWith('MOCKMAN deleted!', 'info');
+    expect(component.modalService.confirmDialog).toHaveBeenCalledWith('Delete Hero', 'Are you sure to delete MOCKMAN?');
+    expect(component.modalService.openSnackBar).toHaveBeenCalledWith('MOCKMAN deleted!', 'info');
   });
 
 
@@ -74,7 +79,7 @@ describe('HeroesListComponent', () => {
 
     component.deleteHero({id: 5, name: 'MOCKMAN'});
 
-    expect(modalService.openSnackBar).toHaveBeenCalledWith('404', 'error');
+    expect(component.modalService.openSnackBar).toHaveBeenCalledWith('404', 'error');
   });
 
 

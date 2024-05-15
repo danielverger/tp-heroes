@@ -1,15 +1,18 @@
-import { Injectable } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Injectable, inject } from '@angular/core';
+
 import { LoaderComponent } from './loader/loader.component';
 import { ConfirmDialogComponent } from './confirm/confirm-dialog.component';
+
 import { MatSnackBar, MatSnackBarConfig, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 export interface ConfirmDialogData {
   title: string;
   message: string;
 }
 
-export type snackBarType = 'warning' | 'error' | 'info'
+export type snackBarType = 'warning' | 'error' | 'info';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -19,10 +22,8 @@ export class ModalService {
   private horizontalPosition: MatSnackBarHorizontalPosition = 'end';
   private verticalPosition: MatSnackBarVerticalPosition = 'top';
   
-  constructor(
-    public dialog: MatDialog,
-    private snackBar: MatSnackBar
-  ){ }
+  public dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
 
   showLoading() {
     if ( !this.dialogRef ) {

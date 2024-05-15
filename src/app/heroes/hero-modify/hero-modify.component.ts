@@ -1,29 +1,56 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Validators, FormGroup, FormBuilder } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
+import { Validators, FormGroup, FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+
 import { ModalService } from './../../shared/modal.service';
 import { Hero } from './../../interfaces/hero';
 import { HeroesService } from '../../services/heroes.service';
+import { UpperCaseDirective } from './../../shared/upper-case.directive';
+
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDividerModule } from '@angular/material/divider';
+import { A11yModule } from '@angular/cdk/a11y';
 
 @Component({
   selector: 'app-hero-modify',
   templateUrl: './hero-modify.component.html',
-  styleUrls: ['./hero-modify.component.scss']
+  styleUrls: ['./hero-modify.component.scss'],
+  standalone: true,
+  imports: [
+    A11yModule,
+    CommonModule,
+    MatButtonModule,
+    MatCardModule,
+    MatDialogModule,
+    MatDividerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSnackBarModule,
+    ReactiveFormsModule,
+    RouterModule,
+    UpperCaseDirective
+  ],
+  providers: [ModalService]
 })
 export class HeroModifyComponent implements OnInit {
   public titleCard?: string;
   public heroForm!: FormGroup;
   public isAddHero = true;
   public isSaving = false;
-  @ViewChild('inputName') inputName!: ElementRef;
 
-  constructor(
-    readonly route: ActivatedRoute, 
-    readonly heroesService: HeroesService,
-    readonly modalService: ModalService,
-    readonly router: Router,
-    readonly formBuilder: FormBuilder
-  ) {}
+  readonly route = inject(ActivatedRoute,);
+  readonly heroesService = inject(HeroesService);
+  readonly modalService = inject(ModalService);
+  readonly router = inject(Router);
+  readonly formBuilder = inject(FormBuilder);
+  
+  @ViewChild('inputName') inputName!: ElementRef;
 
   ngOnInit(): void {
 

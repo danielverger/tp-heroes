@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 
 import { ModalService } from './modal.service';
-import { SharedModule } from './shared.module';
-import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from './confirm/confirm-dialog.component';
-import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { LoaderComponent } from './loader/loader.component';
+
+import { MatSnackBar, MatSnackBarConfig, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 describe('ModalService', () => {
   let service: ModalService;
@@ -15,7 +15,8 @@ describe('ModalService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        SharedModule
+        MatDialogModule,
+        MatSnackBarModule
       ]
     });
     service = TestBed.inject(ModalService);
