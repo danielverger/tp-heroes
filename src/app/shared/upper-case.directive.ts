@@ -1,4 +1,4 @@
-import { Directive, ElementRef, EventEmitter, HostListener, Output, forwardRef, inject } from '@angular/core';
+import { Directive, ElementRef, HostListener, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Directive({
@@ -14,23 +14,24 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 })
 
 export class UpperCaseDirective implements ControlValueAccessor{
-  public ref = inject(ElementRef);
-  private onChange!: (value: string) => void;
-  private onTouched!: () => void;
-  public value!: string;
+  onChange!: (value: string) => void;
+  onTouched!: () => void;
 
-  @Output() ngModelChange: EventEmitter<string> = new EventEmitter()
-  
-  @HostListener('input', ['$event.target.value'])
-  onInput(value: string) {
-    this.ref.nativeElement.value = value.toUpperCase();
-    const transformedValue = value.toUpperCase();
-    this.onChange && this.onChange(transformedValue);
-    this.onTouched && this.onTouched();
+  constructor(private el: ElementRef) { }
+
+  @HostListener('input') onInput() {
+    this.convertToUppercase();
+    this.onChange(this.el.nativeElement.value);
+    this.onTouched();
+  }
+
+  private convertToUppercase() {
+    const currentValue = this.el.nativeElement.value;
+    this.el.nativeElement.value = currentValue.toUpperCase();
   }
 
   writeValue(value: string): void {
-    this.ref.nativeElement.value = value.toUpperCase();
+    this.el.nativeElement.value = value;
   }
 
   registerOnChange(fn: (value: string) => void): void {
